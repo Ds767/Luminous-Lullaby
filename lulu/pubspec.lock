@@ -16,7 +16,7 @@ packages:
     source: hosted
     version: "1.6.0"
   async:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: async
       url: "https://pub.dartlang.org"
@@ -44,7 +44,7 @@ packages:
     source: hosted
     version: "1.14.12"
   convert:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: convert
       url: "https://pub.dartlang.org"
@@ -177,6 +177,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  webview_flutter:
+    dependency: "direct main"
+    description:
+      name: webview_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.22+1"
   xml:
     dependency: transitive
     description:
@@ -186,3 +193,4 @@ packages:
     version: "3.6.1"
 sdks:
   dart: ">=2.7.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"

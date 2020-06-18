@@ -4,9 +4,18 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 
+
+
+List<String> url = <String>[];
+int urlindex = 0;
+
+
 void main() {
+  url.add('https://www.zaohuatu.com/book/5/427.html');
   runApp(MyApp());
 }
+
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -21,7 +30,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: new HomePage(),
+      home: new ShelfPage(),
       locale: Locale('en', 'US'),
       supportedLocales: [
         const Locale('en', 'US'),
@@ -31,12 +40,57 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
+class ShelfPage extends StatefulWidget{
   @override
-  HomePageState createState() => new HomePageState();
+  ShelfPageState createState()=>new ShelfPageState();
 }
 
-class HomePageState extends State<HomePage> {
+class ShelfPageState extends State<ShelfPage>{
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: const Text('Shelf'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context){
+          return ReadPage();
+        }));},
+      ),
+      body: new GridView.builder(
+        scrollDirection: Axis.vertical,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1.0,
+        ),
+        itemCount: url.length,
+        itemBuilder: (context,int i){
+          if(i<url.length)
+          {
+            return new GridTile(
+              child: new FlatButton(
+                child: new Text(url[i]),
+                onPressed: (){
+                  urlindex=i;
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                    return ReadPage();
+                  }));
+                },
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class ReadPage extends StatefulWidget {
+  @override
+  ReadPageState createState() => new ReadPageState();
+}
+
+class ReadPageState extends State<ReadPage> {
   bool isVisible = true;
 
   Widget VActionButton() {
@@ -55,8 +109,8 @@ class HomePageState extends State<HomePage> {
         iconSize: 24.0,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            title: const Text('list'),
+            icon: Icon(Icons.book),
+            title: const Text('book'),
             //backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(
@@ -66,7 +120,11 @@ class HomePageState extends State<HomePage> {
               color: Colors.red,
             ),
             title: const Text('favorite'),
-          )
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.arrow_drop_down),
+            title: const Text(''),
+          ),
         ],
         onTap: (index) {
           BottomClick(index);
@@ -82,6 +140,19 @@ class HomePageState extends State<HomePage> {
   }
 
   void BottomClick(int index) {
+    switch(index){
+      case 0:{
+        Navigator.pop(context);
+   //     Navigator.push(context, MaterialPageRoute(builder: (context){
+   //       return ShelfPage();
+    //    }));
+      }
+      break;
+      case 1:{
+
+      }
+      break;
+    }
     ButtonClick();
   }
 
@@ -92,7 +163,7 @@ class HomePageState extends State<HomePage> {
       body: Builder(
         builder: (BuildContext context) {
           return WebView(
-            initialUrl: 'https://www.zaohuatu.com/book/5/427.html',
+            initialUrl: url[urlindex],
             javascriptMode: JavascriptMode.disabled,
           );
         },
@@ -102,6 +173,24 @@ class HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 const String kNavigationExamplePage = '''

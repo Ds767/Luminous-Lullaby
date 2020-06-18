@@ -4,18 +4,13 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 
-
-
 List<String> url = <String>[];
 int urlindex = 0;
-
 
 void main() {
   url.add('https://www.zaohuatu.com/book/5/427.html');
   runApp(MyApp());
 }
-
-
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -40,22 +35,41 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ShelfPage extends StatefulWidget{
+class ShelfPage extends StatefulWidget {
   @override
-  ShelfPageState createState()=>new ShelfPageState();
+  ShelfPageState createState() => new ShelfPageState();
 }
 
-class ShelfPageState extends State<ShelfPage>{
+class ShelfPageState extends State<ShelfPage> {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
     return new Scaffold(
       appBar: new AppBar(
-        title: const Text('Shelf'),
+        title: Row(
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: const Text('shelf'),
+            ),
+            Expanded(
+              flex: 4,
+              child: TextField(
+                keyboardType: TextInputType.url,
+                decoration:InputDecoration(
+                  hintText: 'url',
+                ),
+              ),
+            )
+          ],
+        )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context){
-          return ReadPage();
-        }));},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return ReadPage();
+          }));
+        },
       ),
       body: new GridView.builder(
         scrollDirection: Axis.vertical,
@@ -64,15 +78,14 @@ class ShelfPageState extends State<ShelfPage>{
           childAspectRatio: 1.0,
         ),
         itemCount: url.length,
-        itemBuilder: (context,int i){
-          if(i<url.length)
-          {
+        itemBuilder: (context, int i) {
+          if (i < url.length) {
             return new GridTile(
               child: new FlatButton(
                 child: new Text(url[i]),
-                onPressed: (){
-                  urlindex=i;
-                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                onPressed: () {
+                  urlindex = i;
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return ReadPage();
                   }));
                 },
@@ -107,23 +120,27 @@ class ReadPageState extends State<ReadPage> {
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         iconSize: 24.0,
+        currentIndex: 2,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            title: const Text('book'),
+            icon: Icon(
+              Icons.book,
+              color: Color(0xFFA88465),
+            ),
+            title: const Text('shelf'),
             //backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(
             //backgroundColor: Colors.blue,
             icon: Icon(
-              Icons.favorite,
+              Icons.bookmark,
               color: Colors.red,
             ),
-            title: const Text('favorite'),
+            title: const Text('note'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.arrow_drop_down),
-            title: const Text(''),
+            icon: Icon(Icons.move_to_inbox),
+            title: const Text('hide'),
           ),
         ],
         onTap: (index) {
@@ -140,18 +157,22 @@ class ReadPageState extends State<ReadPage> {
   }
 
   void BottomClick(int index) {
-    switch(index){
-      case 0:{
-        Navigator.pop(context);
-   //     Navigator.push(context, MaterialPageRoute(builder: (context){
-   //       return ShelfPage();
-    //    }));
-      }
-      break;
-      case 1:{
-
-      }
-      break;
+    switch (index) {
+      case 0:
+        {
+          Navigator.pop(context);
+        }
+        break;
+      case 1:
+        {
+          //跳转至笔记页面
+          /*
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return NotePage();
+          }));
+          */
+        }
+        break;
     }
     ButtonClick();
   }
@@ -173,6 +194,9 @@ class ReadPageState extends State<ReadPage> {
     );
   }
 }
+
+
+
 
 
 

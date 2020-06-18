@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Luminous Lullaby',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         // This makes the visual density adapt to the platform that you run
@@ -21,6 +22,11 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: new HomePage(),
+      locale: Locale('en', 'US'),
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('zh', 'CN'),
+      ],
     );
   }
 }
@@ -31,24 +37,72 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(
-        title: const Text('Webview'),
-      ),
-      body: Builder(
-        builder: (BuildContext context) {
-          return WebView(
-            initialUrl: 'https://cn.bing.com',
-            javascriptMode: JavascriptMode.disabled,
-          );
+  bool isVisible = true;
+
+  Widget VActionButton() {
+    return Visibility(
+        visible: isVisible,
+        child: FloatingActionButton(
+          onPressed: ButtonClick,
+        ));
+  }
+
+  Widget VBottomBar() {
+    return Visibility(
+      visible: !isVisible,
+      child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        iconSize: 24.0,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            title: const Text('list'),
+            //backgroundColor: Colors.green,
+          ),
+          BottomNavigationBarItem(
+            //backgroundColor: Colors.blue,
+            icon: Icon(
+              Icons.favorite,
+              color: Colors.red,
+            ),
+            title: const Text('favorite'),
+          )
+        ],
+        onTap: (index) {
+          BottomClick(index);
         },
       ),
     );
   }
+
+  void ButtonClick() {
+    setState(() {
+      isVisible = !isVisible;
+    });
+  }
+
+  void BottomClick(int index) {
+    ButtonClick();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([]);
+    return new Scaffold(
+      body: Builder(
+        builder: (BuildContext context) {
+          return WebView(
+            initialUrl: 'https://www.zaohuatu.com/book/5/427.html',
+            javascriptMode: JavascriptMode.disabled,
+          );
+        },
+      ),
+      floatingActionButton: VActionButton(),
+      bottomNavigationBar: VBottomBar(),
+    );
+  }
 }
-/*
+
 //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -377,7 +431,6 @@ class NavigationControls extends StatelessWidget {
 }
 //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
- */
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 

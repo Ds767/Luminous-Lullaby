@@ -4,11 +4,9 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 
-List<String> url = <String>[];
-int urlindex = 0;
+
 
 void main() {
-  url.add('https://www.zaohuatu.com/book/5/427.html');
   runApp(MyApp());
 }
 
@@ -41,9 +39,11 @@ class ShelfPage extends StatefulWidget {
 }
 
 class ShelfPageState extends State<ShelfPage> {
+  List<String> url = <String>[];
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
+    url.add('https://www.zaohuatu.com/book/5/427.html');
     return new Scaffold(
       appBar: new AppBar(
         title: Row(
@@ -83,10 +83,9 @@ class ShelfPageState extends State<ShelfPage> {
             return new GridTile(
               child: new FlatButton(
                 child: new Text(url[i]),
-                onPressed: () {
-                  urlindex = i;
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ReadPage();
+                onPressed: () async {
+                  url[i]= await Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ReadPage(url: url[i],);
                   }));
                 },
               ),
@@ -99,11 +98,17 @@ class ShelfPageState extends State<ShelfPage> {
 }
 
 class ReadPage extends StatefulWidget {
+  ReadPage({
+    Key key,
+    this.url,
+}):super(key:key);
   @override
   ReadPageState createState() => new ReadPageState();
+  String url;
 }
 
 class ReadPageState extends State<ReadPage> {
+  //String url;
   bool isVisible = true;
 
   Widget VActionButton() {
@@ -160,7 +165,7 @@ class ReadPageState extends State<ReadPage> {
     switch (index) {
       case 0:
         {
-          Navigator.pop(context);
+          Navigator.pop(context,widget.url);
         }
         break;
       case 1:
@@ -184,7 +189,7 @@ class ReadPageState extends State<ReadPage> {
       body: Builder(
         builder: (BuildContext context) {
           return WebView(
-            initialUrl: url[urlindex],
+            initialUrl: widget.url,
             javascriptMode: JavascriptMode.disabled,
           );
         },

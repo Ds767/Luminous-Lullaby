@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 
-
-
 void main() {
   runApp(MyApp());
 }
@@ -17,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Luminous Lullaby',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.pink,
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
@@ -39,36 +37,52 @@ class ShelfPage extends StatefulWidget {
 }
 
 class ShelfPageState extends State<ShelfPage> {
+  //存储网址
   List<String> url = <String>[];
+  //是否删除网址
+  bool flag = true;
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
-    url.add('https://www.zaohuatu.com/book/5/427.html');
+    SystemChrome.setEnabledSystemUIOverlays(
+        [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    //url.add('https://www.zaohuatu.com/book/5/427.html');
     return new Scaffold(
       appBar: new AppBar(
-        title: Row(
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: const Text('shelf'),
-            ),
-            Expanded(
-              flex: 4,
-              child: TextField(
-                keyboardType: TextInputType.url,
-                decoration:InputDecoration(
-                  hintText: 'url',
+          title: Row(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: const Text('shelf'),
+          ),
+          Expanded(
+            flex: 4,
+            child: TextField(
+              keyboardType: TextInputType.url,
+              decoration: InputDecoration(
+                hintText: 'Input url here!',
+                hintStyle: TextStyle(
+                  color: Colors.greenAccent,
+                  fontSize: 20.0,
                 ),
+                //fillColor: Colors.black12,
+                //filled: true,
               ),
-            )
-          ],
-        )
-      ),
+              textInputAction: TextInputAction.done,
+              onSubmitted: (String string) {
+                setState(() {
+                  url.add(string);
+                });
+              },
+            ),
+          )
+        ],
+      )),
       floatingActionButton: FloatingActionButton(
+        child: Icon(flag == true ? Icons.add : Icons.delete),
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ReadPage();
-          }));
+          setState(() {
+            flag = !flag;
+          });
         },
       ),
       body: new GridView.builder(
@@ -82,11 +96,20 @@ class ShelfPageState extends State<ShelfPage> {
           if (i < url.length) {
             return new GridTile(
               child: new FlatButton(
-                child: new Text(url[i]),
+                child: Text(url[i]),
                 onPressed: () async {
-                  url[i]= await Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ReadPage(url: url[i],);
-                  }));
+                  if (flag == true) {
+                    url[i] = await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ReadPage(
+                        url: url[i],
+                      );
+                    }));
+                  } else {
+                    setState(() {
+                      url.removeAt(i);
+                    });
+                  }
                 },
               ),
             );
@@ -101,7 +124,7 @@ class ReadPage extends StatefulWidget {
   ReadPage({
     Key key,
     this.url,
-}):super(key:key);
+  }) : super(key: key);
   @override
   ReadPageState createState() => new ReadPageState();
   String url;
@@ -144,7 +167,10 @@ class ReadPageState extends State<ReadPage> {
             title: const Text('note'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.move_to_inbox),
+            icon: Icon(
+              Icons.move_to_inbox,
+              color: Colors.green,
+            ),
             title: const Text('hide'),
           ),
         ],
@@ -165,7 +191,7 @@ class ReadPageState extends State<ReadPage> {
     switch (index) {
       case 0:
         {
-          Navigator.pop(context,widget.url);
+          Navigator.pop(context, widget.url);
         }
         break;
       case 1:
@@ -199,7 +225,6 @@ class ReadPageState extends State<ReadPage> {
     );
   }
 }
-
 
 
 

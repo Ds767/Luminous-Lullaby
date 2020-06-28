@@ -28,7 +28,7 @@ document.body.appendChild(res);
 }
 </script>""";
 
-const String reg = "<script>[\s\S]*</script>";
+const String reg = "<script[\s\S]*?>[\s\S]*?</script>";
 //常量
 
 void main() {
@@ -244,7 +244,7 @@ class ReadPageState extends State<ReadPage> {
       body: Builder(
         builder: (BuildContext context) {
           return WebView(
-            initialUrl: "data/user/0/com.ds767.lulu/cache/html.html",
+            //initialUrl: "data/user/0/com.ds767.lulu/cache/html.html",
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: ((WebViewController controller) {
               _htmlDownload(widget.url);
@@ -276,6 +276,11 @@ class ReadPageState extends State<ReadPage> {
     //print(dir);
 
     //_webViewController.loadUrl('file://$dir/html.html');
+
+    print(string.length);
+//    print(Uri.dataFromString(string,
+//        mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
+//        .toString());
 
 //    _webViewController.loadUrl(Uri.dataFromString(string,
 //            mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))

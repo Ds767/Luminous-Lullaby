@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 //常量
 const String UA =
@@ -243,7 +244,7 @@ class ReadPageState extends State<ReadPage> {
       body: Builder(
         builder: (BuildContext context) {
           return WebView(
-            initialUrl: "",
+            initialUrl: "data/user/0/com.ds767.lulu/cache/html.html",
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: ((WebViewController controller) {
               _htmlDownload(widget.url);
@@ -268,6 +269,16 @@ class ReadPageState extends State<ReadPage> {
       httpClient.close();
     } catch (e) {}
     string = string.replaceAll(RegExp(reg), myJs);
-    //_webViewController.loadUrl(string);
+    Directory directory = await getTemporaryDirectory();
+    String dir = directory.path;
+    File file = new File('$dir/html.html');
+    await file.writeAsString(string);
+    //print(dir);
+
+    //_webViewController.loadUrl('file://$dir/html.html');
+
+//    _webViewController.loadUrl(Uri.dataFromString(string,
+//            mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
+//        .toString());
   }
 }

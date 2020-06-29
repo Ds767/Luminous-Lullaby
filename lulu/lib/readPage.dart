@@ -4,7 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'dart:async';
+//import 'dart:async';
 
 //常量
 const String UA =
@@ -129,23 +129,23 @@ class ReadPageState extends State<ReadPage> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
-    return new Scaffold(
-      body: Builder(
-        builder: (BuildContext context) {
-          _htmlDownload(widget.url);
-          return WebView(
-            //file:///storage/emulated/0/Android/data/com.ds767.lulu/cache/html.html
-            initialUrl: "file:///data/user/0/com.ds767.lulu/cache/html.html",
-            javascriptMode: JavascriptMode.unrestricted,
-//            onWebViewCreated: ((WebViewController controller) {
-//              _htmlDownload(widget.url);
-//            }),
-          );
-        },
-      ),
-      floatingActionButton: vActionButton(),
-      bottomNavigationBar: vBottomBar(),
-    );
+    return new WillPopScope(
+        child: new Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              _htmlDownload(widget.url);
+              return WebView(
+                //file:///storage/emulated/0/Android/data/com.ds767.lulu/cache/html.html
+                initialUrl:
+                    "file:///data/user/0/com.ds767.lulu/cache/html.html",
+                javascriptMode: JavascriptMode.unrestricted,
+              );
+            },
+          ),
+          floatingActionButton: vActionButton(),
+          bottomNavigationBar: vBottomBar(),
+        ),
+        onWillPop: (){Navigator.pop(context, widget.url);});
   }
 
   void _htmlDownload(String url) async {
@@ -170,7 +170,7 @@ class ReadPageState extends State<ReadPage> {
         RegExp(reg, multiLine: true, caseSensitive: true), ' ');
     string = string.replaceFirst(
         RegExp(reg1, multiLine: true, caseSensitive: true), myJs);
-    print('fliter ok');
+    print('filter ok');
     return string;
   }
 

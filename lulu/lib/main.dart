@@ -8,9 +8,10 @@ import 'package:path_provider/path_provider.dart';
 
 //常量
 const String UA =
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1";
+    r"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
 
-const String myJs = """<script> 
+const String myJs = r"""
+<script> 
 var as=document.querySelectorAll("a[href]");
 var i=0;
 var patt=/下一/;
@@ -26,9 +27,13 @@ res.innerHTML="<button>翻</button>";
 document.body.appendChild(res);
 }
 }
-</script>""";
+</script>
+</html>
+""";
 
-const String reg = "<script[\s\S]*?>[\s\S]*?</script>";
+const String reg =
+    r"<script[\s\S]*?>[\s\S]*?</script>|<meta[\s\S]*?>|<link[\s\S]*?>|\n";
+const String reg1 = r'</html>';
 //常量
 
 void main() {
@@ -268,7 +273,7 @@ class ReadPageState extends State<ReadPage> {
       //print(response.headers);
       httpClient.close();
     } catch (e) {}
-    string = string.replaceAll(RegExp(reg), myJs);
+    string = htmlFilter(string);
     Directory directory = await getTemporaryDirectory();
     String dir = directory.path;
     File file = new File('$dir/html.html');
@@ -276,8 +281,6 @@ class ReadPageState extends State<ReadPage> {
     //print(dir);
 
     //_webViewController.loadUrl('file://$dir/html.html');
-
-    print(string.length);
 //    print(Uri.dataFromString(string,
 //        mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
 //        .toString());
@@ -285,5 +288,15 @@ class ReadPageState extends State<ReadPage> {
 //    _webViewController.loadUrl(Uri.dataFromString(string,
 //            mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
 //        .toString());
+  }
+
+  String htmlFilter(String string) {
+    print(string.length);
+    string = string.replaceAll(
+        RegExp(reg, multiLine: true, caseSensitive: true), ' ');
+    string = string.replaceFirst(
+        RegExp(reg1, multiLine: true, caseSensitive: true), myJs);
+    print(string);
+    return string;
   }
 }

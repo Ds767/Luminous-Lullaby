@@ -25,6 +25,7 @@ res.style="position:fixed;z-index:1;top:300px;right:10px;";
 res.href=as[i].href;
 res.innerHTML="<button>翻</button>";
 document.body.appendChild(res);
+toast.postMessage(res.href);
 }
 }
 </script>
@@ -47,12 +48,13 @@ class ReadPage extends StatefulWidget {
 }
 
 class ReadPageState extends State<ReadPage> {
-  //String url;
-  bool isVisible = true;
+  String _currentUrl;
+  bool _isVisible = true;
+  WebViewController _webViewController;
 
   Widget vActionButton() {
     return Visibility(
-        visible: isVisible,
+        visible: _isVisible,
         child: FloatingActionButton(
           onPressed: buttonClick,
         ));
@@ -60,7 +62,7 @@ class ReadPageState extends State<ReadPage> {
 
   Widget vBottomBar() {
     return Visibility(
-      visible: !isVisible,
+      visible: !_isVisible,
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         iconSize: 24.0,
@@ -99,7 +101,7 @@ class ReadPageState extends State<ReadPage> {
 
   void buttonClick() {
     setState(() {
-      isVisible = !isVisible;
+      _isVisible = !_isVisible;
     });
   }
 
@@ -107,7 +109,7 @@ class ReadPageState extends State<ReadPage> {
     switch (index) {
       case 0:
         {
-          Navigator.pop(context, widget.url);
+          Navigator.pop(context, _currentUrl);
         }
         break;
       case 1:
@@ -124,7 +126,15 @@ class ReadPageState extends State<ReadPage> {
     buttonClick();
   }
 
-  WebViewController _webViewController;
+  JavascriptChannel _javascriptChannel(BuildContext context){
+    return JavascriptChannel(
+      name: 'toast',
+      onMessageReceived: (JavascriptMessage javascriptMessage){
+        _currentUrl=javascriptMessage.message;
+        print(_currentUrl);
+      }
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,13 +149,23 @@ class ReadPageState extends State<ReadPage> {
                 initialUrl:
                     "file:///data/user/0/com.ds767.lulu/cache/html.html",
                 javascriptMode: JavascriptMode.unrestricted,
+                onWebViewCreated: (WebViewController controller) {
+                  _webViewController = controller;
+                  _webViewController.loadUrl(
+                      "file:///data/user/0/com.ds767.lulu/cache/html.html");
+                },
+                javascriptChannels: <JavascriptChannel>[
+                  _javascriptChannel(context),
+                ].toSet(),
               );
             },
           ),
           floatingActionButton: vActionButton(),
           bottomNavigationBar: vBottomBar(),
         ),
-        onWillPop: (){Navigator.pop(context, widget.url);});
+        onWillPop: () {
+          Navigator.pop(context, _currentUrl);
+        });
   }
 
   void _htmlDownload(String url) async {
@@ -159,9 +179,9 @@ class ReadPageState extends State<ReadPage> {
     httpClient.close();
 
     string = htmlFilter(string);
-
+    //Todo:会打开之前的网页，可能是上一步没等待，但是flutter应该是单线程，以后再研究。
+    //Todo:可能会导致覆盖网址的问题
     await _dataSave(string);
-
     print('load ok');
   }
 

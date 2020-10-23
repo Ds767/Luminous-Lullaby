@@ -104,6 +104,7 @@ class ShelfPageState extends State<ShelfPage> {
                         url: url[i],
                       );
                     }));
+                    setState(() {});
                   } else {
                     setState(() {
                       url.removeAt(i);

@@ -126,14 +126,13 @@ class ReadPageState extends State<ReadPage> {
     buttonClick();
   }
 
-  JavascriptChannel _javascriptChannel(BuildContext context){
+  JavascriptChannel _javascriptChannel(BuildContext context) {
     return JavascriptChannel(
-      name: 'toast',
-      onMessageReceived: (JavascriptMessage javascriptMessage){
-        _currentUrl=javascriptMessage.message;
-        print(_currentUrl);
-      }
-    );
+        name: 'toast',
+        onMessageReceived: (JavascriptMessage javascriptMessage) {
+          _currentUrl = javascriptMessage.message;
+          print(_currentUrl);
+        });
   }
 
   @override
@@ -143,32 +142,38 @@ class ReadPageState extends State<ReadPage> {
         child: new Scaffold(
           body: Builder(
             builder: (BuildContext context) {
-              _htmlDownload(widget.url);
-              return WebView(
+              _currentUrl = widget.url;
+              Future.delayed(new Duration(seconds: 2),(){
+                _htmlDownload(widget.url);
+              });
+              return new WebView(
                 //file:///storage/emulated/0/Android/data/com.ds767.lulu/cache/html.html
                 initialUrl:
                     "file:///data/user/0/com.ds767.lulu/cache/html.html",
                 javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController controller) {
-                  _webViewController = controller;
-                  _webViewController.loadUrl(
-                      "file:///data/user/0/com.ds767.lulu/cache/html.html");
-                },
+//                onWebViewCreated: (WebViewController controller) {
+//                  _webViewController = controller;
+//                  _webViewController.loadUrl(
+//                      "file:///data/user/0/com.ds767.lulu/cache/html.html");
+//                },
                 javascriptChannels: <JavascriptChannel>[
                   _javascriptChannel(context),
                 ].toSet(),
+                onPageStarted: _htmlDownload,
+                
               );
             },
           ),
           floatingActionButton: vActionButton(),
           bottomNavigationBar: vBottomBar(),
         ),
-        onWillPop: () {
+        onWillPop: () async {
           Navigator.pop(context, _currentUrl);
+          return true;
         });
   }
 
-  void _htmlDownload(String url) async {
+  Future<String> _htmlDownload(String url) async {
     String string = "";
     HttpClient httpClient = new HttpClient();
     HttpClientRequest request = await httpClient.getUrl(Uri.parse(url));
@@ -181,8 +186,9 @@ class ReadPageState extends State<ReadPage> {
     string = htmlFilter(string);
     //Todo:会打开之前的网页，可能是上一步没等待，但是flutter应该是单线程，以后再研究。
     //Todo:可能会导致覆盖网址的问题
-    await _dataSave(string);
+    string = await _dataSave(string);
     print('load ok');
+    return string;
   }
 
   String htmlFilter(String string) {
@@ -194,11 +200,12 @@ class ReadPageState extends State<ReadPage> {
     return string;
   }
 
-  void _dataSave(String string) async {
+  Future<String> _dataSave(String string) async {
     Directory directory = await getTemporaryDirectory();
     String dir = directory.path;
     File file = new File('$dir/html.html');
     await file.writeAsString(string);
     print('save ok');
+    return '$dir/html.html';
   }
 }
